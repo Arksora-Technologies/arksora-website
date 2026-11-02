@@ -98,6 +98,14 @@
   .join .intro { margin: 14px auto 30px; }
   .join .ctas .btn-line { color: var(--teal); border-color: var(--line); }
   .join .ctas .btn-line:hover { border-color: var(--teal); }
+  .mailbox { margin: 26px auto 0; max-width: 560px; background: var(--tint); border-radius: 14px; padding: 22px 20px; }
+  .mailbox[hidden] { display: none; }
+  .mb-title { font-size: 16px; margin-bottom: 14px; }
+  .mb-opts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .mb-opts .btn { padding: 10px 16px; font-size: 14.5px; }
+  .mailbox .btn-line { background: #fff; color: var(--teal); border-color: var(--line); }
+  .mailbox .btn-line:hover { border-color: var(--teal); }
+  .mb-hint { font-size: 14px; color: var(--ink2); margin-top: 12px; }
   .small { font-size: 13.5px; color: var(--ink3); margin-top: 18px; }
 
   footer { padding: 8px 0 44px; font-size: 14.5px; color: var(--ink3); }
@@ -198,8 +206,17 @@
         <h2 class="disp">Be here when we open the doors</h2>
         <p class="intro">Run an engineering firm, or work in one? Write to us. We'll show you first, and we'd like to hear what slows your orders down.</p>
         <div class="ctas">
-          <a class="btn btn-primary" href="mailto:info@arksora.com?subject=Show%20me%20first&amp;body=Name%3A%0ACompany%3A%0ACity%3A%0AWhat%20you%20make%3A%0A">Show me first</a>
-          <a class="btn btn-line" href="mailto:info@arksora.com?subject=Services%20enquiry&amp;body=Name%3A%0ACompany%3A%0AWhat%20you%20need%20help%20with%3A%0A">Talk to us about services</a>
+          <a class="btn btn-primary" data-mail href="mailto:info@arksora.com?subject=Show%20me%20first&amp;body=Name%3A%0ACompany%3A%0ACity%3A%0AWhat%20you%20make%3A%0A">Show me first</a>
+          <a class="btn btn-line" data-mail href="mailto:info@arksora.com?subject=Services%20enquiry&amp;body=Name%3A%0ACompany%3A%0AWhat%20you%20need%20help%20with%3A%0A">Talk to us about services</a>
+        </div>
+        <div class="mailbox" id="mailbox" hidden>
+          <p class="mb-title" id="mbTitle">Write to us at <b>info@arksora.com</b></p>
+          <div class="mb-opts">
+            <a class="btn btn-primary" id="mbGmail" href="#" target="_blank" rel="noopener">Open in Gmail</a>
+            <a class="btn btn-line" id="mbApp" href="#">Open my email app</a>
+            <button class="btn btn-line" id="mbCopy" type="button">Copy email address</button>
+          </div>
+          <p class="mb-hint" id="mbHint">Tell us your name, company, city and what you make.</p>
         </div>
         <p class="small">We use your details only to reply to you.</p>
       </div>
@@ -250,6 +267,31 @@
   } else {
     document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
   }
+
+  // Email buttons: many laptops have no email app set up, so a plain mailto link does nothing.
+  // Show choices instead: Gmail in the browser, the email app, or copy the address.
+  (function () {
+    var box = document.getElementById('mailbox'), addr = 'info@arksora.com';
+    var gm = document.getElementById('mbGmail'), app = document.getElementById('mbApp'), cp = document.getElementById('mbCopy'), hint = document.getElementById('mbHint');
+    document.querySelectorAll('[data-mail]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var q = new URLSearchParams(a.getAttribute('href').split('?')[1] || '');
+        var su = q.get('subject') || '', body = q.get('body') || '';
+        gm.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + addr + '&su=' + encodeURIComponent(su) + '&body=' + encodeURIComponent(body);
+        app.href = a.getAttribute('href');
+        hint.textContent = su === 'Services enquiry' ? 'Tell us your name, company and what you need help with.' : 'Tell us your name, company, city and what you make.';
+        cp.textContent = 'Copy email address';
+        box.hidden = false;
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+    cp.addEventListener('click', function () {
+      function done() { cp.textContent = 'Copied: ' + addr; }
+      if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(addr).then(done, fallback); } else { fallback(); }
+      function fallback() { var t = document.createElement('textarea'); t.value = addr; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); done(); } catch (x) { cp.textContent = addr; } t.remove(); }
+    });
+  })();
 </script>
 </body>
 </html>
