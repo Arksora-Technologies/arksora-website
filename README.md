@@ -1,2 +1,2 @@
 # arksora-website
-Company Website
+Arksora Company Website 
