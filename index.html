@@ -128,6 +128,39 @@
     .mark .hook { opacity: 0; }
     .reveal { opacity: 1; transform: none; transition: none; }
   }
+
+  /* Diwali 2026: start. The script at the end of the page builds these only until 10 Nov 2026, 11:59 pm IST;
+     after that nothing shows. Delete this block and the Diwali script at the next edit. */
+  .toran { position: absolute; left: 0; right: 0; top: 72px; height: 110px; pointer-events: none; z-index: 0; }
+  .toran svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .toran .cord { fill: none; stroke: rgba(191,227,216,.45); stroke-width: 1.2; }
+  .toran .drop { stroke: rgba(191,227,216,.45); stroke-width: 1; }
+  .toran .knot { fill: #BFE3D8; }
+  .toran .lamp { opacity: 0; animation: lampOn .5s ease-out forwards; }
+  .toran .glow { transform-box: fill-box; transform-origin: center; opacity: .6; animation: chase 6s ease-in-out infinite; }
+  @keyframes lampOn { 0% { opacity: 0; } 60% { opacity: 1; } 100% { opacity: 1; } }
+  @keyframes chase { 0%, 100% { transform: scale(1); opacity: .6; } 7% { transform: scale(1.9); opacity: 1; } 18% { transform: scale(1); opacity: .6; } }
+  .embers { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .embers i { position: absolute; bottom: -12px; border-radius: 50%; background: #FFFFFF; opacity: 0;
+    box-shadow: 0 0 6px 2px rgba(191,227,216,.75), 0 0 16px 4px rgba(191,227,216,.3); animation: drift linear infinite; }
+  .embers i.m { background: #BFE3D8; }
+  @keyframes drift { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: .9; }
+    75% { opacity: .55; } 100% { transform: translate(var(--dx), -92vh); opacity: 0; } }
+  .greet { display: inline-flex; align-items: center; gap: 10px; margin-top: 30px; padding: 8px 18px 8px 12px;
+    border-radius: 999px; border: 1px solid rgba(191,227,216,.5); background: rgba(191,227,216,.1);
+    color: #fff; font-size: 15.5px; font-weight: 500; animation-name: rise, halo; animation-duration: .8s, 3.2s;
+    animation-timing-function: ease-out, ease-in-out; animation-iteration-count: 1, infinite; animation-fill-mode: forwards, none; }
+  .greet svg { width: 24px; height: 24px; flex: none; }
+  .greet .flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flicker 1.6s ease-in-out infinite; }
+  @keyframes halo { 0%, 100% { box-shadow: 0 0 0 0 rgba(191,227,216,0); } 50% { box-shadow: 0 0 24px 2px rgba(191,227,216,.28); } }
+  @keyframes flicker { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(.92, 1.12); } 60% { transform: scale(1.05, .94); } }
+  .d5 { animation-delay: 3.2s, 4s; }
+  @media (max-width: 760px) { .toran { height: 84px; } .greet { margin-top: 24px; font-size: 15px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .toran .lamp, .toran .glow, .greet, .greet .flame { animation: none; opacity: 1; }
+    .toran .glow { opacity: .7; } .embers { display: none; }
+  }
+  /* Diwali 2026: end */
 </style>
 </head>
 <body>
@@ -293,5 +326,103 @@
     });
   })();
 </script>
+
+<!-- Diwali 2026: start. Scalloped strings of mint and white lights, rising lanterns and a greeting, built only
+     before 11 Nov 2026 00:00 IST. After that date this script returns at once and the page is exactly as before.
+     Delete this script and the Diwali CSS block at the next edit. -->
+<script>
+  (function () {
+    var END = Date.UTC(2026, 10, 10, 18, 30); // 11 Nov 2026, 00:00 IST
+    if (Date.now() >= END) return;
+    var hero = document.querySelector('.hero'), stage = document.querySelector('.stage');
+    if (!hero || !stage) return;
+    var NS = 'http://www.w3.org/2000/svg', t0 = Date.now(), lastW = 0;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function el(name, attrs) {
+      var e = document.createElementNS(NS, name);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+    var seed = 7;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+
+    // Lanterns drifting up into the sky (Sora)
+    var embers = document.createElement('div');
+    embers.className = 'embers';
+    embers.setAttribute('aria-hidden', 'true');
+    if (!reduce) {
+      var count = window.innerWidth < 760 ? 14 : 26;
+      for (var e = 0; e < count; e++) {
+        var dot = document.createElement('i'), size = 2.5 + rnd() * 3.5;
+        if (e % 3 === 0) dot.className = 'm';
+        dot.style.left = (rnd() * 100).toFixed(1) + '%';
+        dot.style.width = dot.style.height = size.toFixed(1) + 'px';
+        dot.style.setProperty('--dx', ((rnd() - 0.5) * 120).toFixed(0) + 'px');
+        dot.style.animationDuration = (10 + rnd() * 9).toFixed(1) + 's';
+        dot.style.animationDelay = (2.8 + rnd() * 10).toFixed(1) + 's';
+        embers.appendChild(dot);
+      }
+    }
+    hero.insertBefore(embers, hero.firstChild);
+
+    // Strings of lights in scallops; an anchor sits at the centre, right above the mark
+    var box = document.createElement('div');
+    box.className = 'toran';
+    box.setAttribute('aria-hidden', 'true');
+    hero.insertBefore(box, hero.firstChild);
+
+    function draw() {
+      var w = hero.clientWidth, h = box.clientHeight;
+      if (!w || w === lastW) return;
+      lastW = w;
+      var small = w < 760, top = 4, swags = small ? 2 : (w > 1700 ? 6 : 4), sag = small ? 30 : 42;
+      var sw = w / swags, per = Math.max(4, Math.round(sw / (small ? 30 : 40)));
+      var base = (Date.now() - t0) > 6000 ? 0 : 2.7; // light up after the load is set down, only on first view
+      var svg = el('svg', { viewBox: '0 0 ' + w + ' ' + h, preserveAspectRatio: 'none' });
+      var defs = el('defs', {}), g = el('radialGradient', { id: 'dwGlow' });
+      g.appendChild(el('stop', { offset: '0', 'stop-color': '#FFFFFF', 'stop-opacity': '.95' }));
+      g.appendChild(el('stop', { offset: '.3', 'stop-color': '#BFE3D8', 'stop-opacity': '.6' }));
+      g.appendChild(el('stop', { offset: '1', 'stop-color': '#BFE3D8', 'stop-opacity': '0' }));
+      defs.appendChild(g); svg.appendChild(defs);
+      var idx = 0, total = swags * per;
+      for (var s = 0; s < swags; s++) {
+        var x0 = s * sw;
+        svg.appendChild(el('path', { 'class': 'cord', d: 'M' + x0 + ' ' + top + ' Q' + (x0 + sw / 2) + ' ' + (top + 2 * sag) + ' ' + (x0 + sw) + ' ' + top }));
+        for (var j = 0; j < per; j++, idx++) {
+          var t = (j + 0.5) / per, x = x0 + sw * t, y = top + 4 * sag * t * (1 - t), len = j % 2 ? 14 : 6, cy = y + len + 4;
+          var lamp = el('g', { 'class': 'lamp' });
+          lamp.appendChild(el('line', { 'class': 'drop', x1: x, y1: y, x2: x, y2: cy - 3 }));
+          var glow = el('circle', { 'class': 'glow', cx: x, cy: cy, r: small ? 11 : 14, fill: 'url(#dwGlow)' });
+          lamp.appendChild(glow);
+          lamp.appendChild(el('circle', { cx: x, cy: cy, r: small ? 2.8 : 3.4, fill: '#FFFFFF' }));
+          var on = base + idx * (1.8 / total);
+          lamp.style.animationDelay = on + 's';
+          glow.style.animationDelay = (base + 1.2 + idx * (2.6 / total)) + 's'; // a light runs along the string
+          svg.appendChild(lamp);
+        }
+      }
+      for (var k = 0; k <= swags; k++) svg.appendChild(el('circle', { 'class': 'knot', cx: k * sw, cy: top, r: 2.6 }));
+      box.innerHTML = '';
+      box.appendChild(svg);
+    }
+
+    // Greeting pill with a small lit diya, drawn as a line icon in the brand style
+    var p = document.createElement('p');
+    p.className = 'greet fade d5';
+    p.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="M3.5 14.5h17c-.8 3.4-4.2 5.5-8.5 5.5s-7.7-2.1-8.5-5.5z" fill="none" stroke="#BFE3D8" stroke-width="1.7" stroke-linejoin="round"/>' +
+      '<path class="flame" d="M12 4.5c1.9 2.3 2.6 3.9 2.6 5.3a2.6 2.6 0 0 1-5.2 0c0-1.4.7-3 2.6-5.3z" fill="#FFFFFF"/>' +
+      '</svg><span>Happy Diwali from Arksora</span>';
+    var wrap = document.createElement('div');
+    wrap.appendChild(p);
+    stage.appendChild(wrap);
+
+    draw();
+    var timer;
+    window.addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(draw, 150); });
+  })();
+</script>
+<!-- Diwali 2026: end -->
 </body>
 </html>
